@@ -115,8 +115,7 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
                     })?)
                 } else {
                     Err(StdError::not_found(format!(
-                        "Transfer with id {} not found",
-                        id
+                        "Transfer with id {id} not found",
                     )))
                 }
             } else {
