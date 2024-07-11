@@ -3,6 +3,8 @@ name = "cw-ics20-hook"
 version = "1.0.0"
 authors = ["Amit Prasad <amit@entropiclabs.io>"]
 edition = "2021"
+description = "Wrapper contract for Kujira's ICS20 cosmwasm hooks"
+license = "MIT"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
