@@ -1,7 +1,7 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use cosmwasm_std::{to_json_binary, Addr, CosmosMsg, StdResult, WasmMsg};
+use cosmwasm_std::{to_json_binary, Addr, CosmosMsg, CustomMsg, IbcTimeout, StdResult, WasmMsg};
 
 use crate::msg::ExecuteMsg;
 
@@ -15,8 +15,30 @@ impl CwIcs20Contract {
         self.0.clone()
     }
 
-    pub fn call<T: Into<ExecuteMsg>>(&self, msg: T) -> StdResult<CosmosMsg> {
+    pub fn call<T: Into<ExecuteMsg>, C: CustomMsg>(&self, msg: T) -> StdResult<CosmosMsg<C>> {
         let msg = to_json_binary(&msg.into())?;
+        Ok(WasmMsg::Execute {
+            contract_addr: self.addr().into(),
+            msg,
+            funds: vec![],
+        }
+        .into())
+    }
+
+    pub fn transfer<T: Serialize, C: CustomMsg>(
+        &self,
+        channel_id: String,
+        to_address: String,
+        timeout: IbcTimeout,
+        transfer_callback: &T,
+    ) -> StdResult<CosmosMsg<C>> {
+        let msg = ExecuteMsg::Transfer {
+            channel_id,
+            to_address,
+            timeout,
+            transfer_callback: to_json_binary(transfer_callback)?.into(),
+        };
+        let msg = to_json_binary(&msg)?;
         Ok(WasmMsg::Execute {
             contract_addr: self.addr().into(),
             msg,
