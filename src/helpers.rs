@@ -1,7 +1,9 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use cosmwasm_std::{to_json_binary, Addr, CosmosMsg, CustomMsg, IbcTimeout, StdResult, WasmMsg};
+use cosmwasm_std::{
+    to_json_binary, Addr, Coin, CosmosMsg, CustomMsg, IbcTimeout, StdResult, WasmMsg,
+};
 
 use crate::msg::ExecuteMsg;
 
@@ -29,6 +31,7 @@ impl CwIcs20Contract {
         &self,
         channel_id: String,
         to_address: String,
+        amount: Coin,
         timeout: IbcTimeout,
         transfer_callback: &T,
     ) -> StdResult<CosmosMsg<C>> {
@@ -42,7 +45,7 @@ impl CwIcs20Contract {
         Ok(WasmMsg::Execute {
             contract_addr: self.addr().into(),
             msg,
-            funds: vec![],
+            funds: vec![amount],
         }
         .into())
     }
